@@ -1,0 +1,105 @@
+---
+# ansible/playbooks/configure.yml
+
+- name: "Install and configure Smart Display"
+  hosts: "all"
+
+  handlers:
+
+    - name: "Reboot System"
+      ansible.builtin.reboot:
+        reboot_timeout: 3600
+      become: true
+      tags:
+        - "smartdisplay"
+        - "system"
+        - "reboot"
+
+  tasks:
+
+    - name: "Manage smartdisplay Packages"
+      ansible.builtin.package:
+        name:
+          - "cockpit"
+          - "gdm"
+          - "glances"
+          - "gnome-kiosk"
+          - "gnome-terminal"
+          - "nodejs"
+        state: "present"
+      become: true
+      tags:
+        - "smartdisplay"
+        - "package"
+
+    - name: "Manage cockpit Service"
+      ansible.builtin.service:
+        name: "cockpit.socket"
+        state: "started"
+        enabled: true
+      become: true
+      tags:
+        - "smartdisplay"
+        - "cockpit"
+        - "service"
+
+    - name: "Manage default Target"
+      ansible.builtin.file:
+        src: "/usr/lib/systemd/system/graphical.target"
+        dest: "/etc/systemd/system/default.target"
+        state: "link"
+      become: true
+      notify:
+        - "Reboot System"
+      tags:
+        - "smartdisplay"
+        - "target"
+
+    - name: "Reboot System"
+      ansible.builtin.reboot:
+        reboot_timeout: 3600
+      become: true
+      tags:
+        - "smartdisplay"
+        - "reboot"
+
+    - name: "Manage smartdisplay User"
+      ansible.builtin.user:
+        name: "displayer"
+        # create new password hash: `mkpasswd --method=sha-512`
+        # default: password
+        password: "$6$rK2tMOXyvuIC7n2t$1lzWt918vvhuFtFKre1XAvLv6oyCSRT3Z2zIwv6gh1CQyG6I/7R/ZQjOVz6CKiJwHzl6vYKSwpMQ3e6VnosLY/"
+        home: "/var/lib/displayer/"
+      become: true
+      tags:
+        - "smartdisplay"
+        - "user"
+
+    - name: "Manage smartdisplay Source Code"
+      ansible.builtin.git:
+        repo: "https://github.com/MichMich/Magicsmartdisplay.git"
+        dest: "/var/lin/smartdisplay/app/"
+      become: true
+      become_user: "displayer"
+      tags:
+        - "smartdisplay"
+        - "git"
+
+    - name: "Manage smartdisplay NPM Packages"
+      community.general.npm:
+        path: "/var/lib/smartdisplay/app/"
+        state: "present"
+      become: true
+      become_user: "displayer"
+      tags:
+        - "smartdisplay"
+        - "npm"
+
+  post_tasks:
+
+    - name: "Guide"
+      ansible.builtin.debug:
+        msg: "The system is configured. You can log in via:
+              - ssh {{ ansible_ssh_host }}
+              - https://{{ ansible_ssh_host }}:9090
+              - a connected display"
