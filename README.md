@@ -11,7 +11,7 @@ reference: https://commonmark.org/
 
 # Fedora - SmartDisplay
 
-Setup of my SmartDisplay, based on MagicMirror and Fedora Linux.
+Setup of my SmartDisplay, based on Fedora Linux.
 
 ## Motivation
 
