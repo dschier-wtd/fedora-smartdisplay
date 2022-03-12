@@ -38,12 +38,4 @@ test_ansible_task:
                           ansible/playbooks/configure.yml"
   test_update_script: "ansible-playbook --syntax-check
                       ansible/playbooks/update.yml"
-
-lint_kickstart_task:
-  name: "Lint Kickstart"
-  container:
-    image: "docker.io/library/fedora:35"
-  install_script: "dnf in -y pykickstart"
-  lint_base_script: "ksvalidator -i kickstart/base_ks.cfg"
-  lint_full_script: "ksvalidator -i kickstart/full_ks.cfg"
 ...
