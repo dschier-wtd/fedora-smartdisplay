@@ -68,6 +68,7 @@
         name: "displayer"
         # create new password hash: `mkpasswd --method=sha-512`
         # default: password
+        # yamllint disable-line rule:line-length
         password: "$6$rK2tMOXyvuIC7n2t$1lzWt918vvhuFtFKre1XAvLv6oyCSRT3Z2zIwv6gh1CQyG6I/7R/ZQjOVz6CKiJwHzl6vYKSwpMQ3e6VnosLY/"
         home: "/var/lib/displayer/"
       become: true
