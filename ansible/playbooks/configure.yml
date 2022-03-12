@@ -63,37 +63,40 @@
         - "smartdisplay"
         - "reboot"
 
+    # mirror specific tasks
+
     - name: "Manage smartdisplay User"
       ansible.builtin.user:
-        name: "displayer"
+        name: "mirror"
         # create new password hash: `mkpasswd --method=sha-512`
         # default: password
         # yamllint disable-line rule:line-length
         password: "$6$rK2tMOXyvuIC7n2t$1lzWt918vvhuFtFKre1XAvLv6oyCSRT3Z2zIwv6gh1CQyG6I/7R/ZQjOVz6CKiJwHzl6vYKSwpMQ3e6VnosLY/"
-        home: "/var/lib/displayer/"
+        home: "/var/lib/mirror/"
       become: true
       tags:
-        - "smartdisplay"
+        - "mirror"
         - "user"
 
-    - name: "Manage smartdisplay Source Code"
+    - name: "Manage mirror Source Code"
       ansible.builtin.git:
-        repo: "https://github.com/MichMich/Magicsmartdisplay.git"
-        dest: "/var/lin/smartdisplay/app/"
+        repo: "https://github.com/MichMich/MagicMirror.git"
+        version: "v2.18.0"
+        dest: "/var/lin/mirror/app/"
       become: true
-      become_user: "displayer"
+      become_user: "mirror"
       tags:
         - "smartdisplay"
         - "git"
 
-    - name: "Manage smartdisplay NPM Packages"
+    - name: "Manage mirror NPM Packages"
       community.general.npm:
-        path: "/var/lib/smartdisplay/app/"
+        path: "/var/lib/mirror/app/"
         state: "present"
       become: true
-      become_user: "displayer"
+      become_user: "mirror"
       tags:
-        - "smartdisplay"
+        - "mirror"
         - "npm"
 
   post_tasks:
@@ -104,3 +107,4 @@
               - ssh {{ ansible_ssh_host }}
               - https://{{ ansible_ssh_host }}:9090
               - a connected display"
+...
